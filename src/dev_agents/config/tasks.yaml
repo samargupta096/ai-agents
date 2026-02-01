@@ -1,0 +1,138 @@
+"""Task definitions for each agent type."""
+
+generate_code_task:
+  description: >
+    Generate {language} code based on the following requirements:
+    
+    {requirements}
+    
+    Ensure the code:
+    - Is production-ready and follows best practices
+    - Includes proper error handling
+    - Has clear variable and function names
+    - Includes inline comments for complex logic
+  expected_output: >
+    Well-structured {language} code that implements the requirements.
+    Include any necessary imports and dependencies.
+    Format: Code block with proper syntax highlighting.
+  agent: code_generator
+
+review_code_task:
+  description: >
+    Review the following code for issues and improvements:
+    
+    File: {file_path}
+    
+    ```{language}
+    {code_content}
+    ```
+    
+    Check for:
+    - Bugs and logic errors
+    - Security vulnerabilities
+    - Performance issues
+    - Code style and best practices
+    - Missing error handling
+  expected_output: >
+    Detailed code review report containing:
+    - Summary of findings (Critical/High/Medium/Low)
+    - Specific issues with line numbers
+    - Suggested fixes with code examples
+    - Overall code quality score (1-10)
+    Format: Markdown report
+  agent: code_reviewer
+
+debug_code_task:
+  description: >
+    Debug the following issue:
+    
+    Error/Problem: {error_description}
+    
+    File: {file_path}
+    
+    ```{language}
+    {code_content}
+    ```
+    
+    Stack Trace (if available):
+    {stack_trace}
+    
+    Analyze and identify the root cause.
+  expected_output: >
+    Debugging report containing:
+    - Root cause analysis
+    - Step-by-step explanation of what's happening
+    - Recommended fix with code example
+    - Prevention tips for similar issues
+    Format: Markdown report
+  agent: bug_detective
+
+generate_tests_task:
+  description: >
+    Generate comprehensive tests for the following code:
+    
+    File: {file_path}
+    
+    ```{language}
+    {code_content}
+    ```
+    
+    Test framework: {test_framework}
+    
+    Create tests that:
+    - Cover all functions/methods
+    - Test edge cases and error conditions
+    - Include both unit and integration tests where appropriate
+  expected_output: >
+    Complete test file containing:
+    - Unit tests for all public functions/methods
+    - Edge case tests
+    - Error handling tests
+    - Mocking where appropriate
+    Format: Valid {test_framework} test code
+  agent: test_generator
+
+generate_docs_task:
+  description: >
+    Generate documentation for the following code:
+    
+    File: {file_path}
+    
+    ```{language}
+    {code_content}
+    ```
+    
+    Documentation type: {doc_type}
+    
+    Create clear, comprehensive documentation.
+  expected_output: >
+    Documentation containing:
+    - Module/class overview
+    - Function/method docstrings
+    - Usage examples
+    - Parameter and return value descriptions
+    Format: Appropriate format based on doc_type (docstrings/README/API docs)
+  agent: doc_writer
+
+refactor_code_task:
+  description: >
+    Analyze and suggest refactoring for the following code:
+    
+    File: {file_path}
+    
+    ```{language}
+    {code_content}
+    ```
+    
+    Focus areas: {focus_areas}
+    
+    Identify code smells and improvement opportunities.
+  expected_output: >
+    Refactoring report containing:
+    - Identified code smells
+    - Suggested improvements with explanations
+    - Refactored code examples
+    - Design pattern recommendations where applicable
+    - Estimated effort and risk assessment
+    Format: Markdown report with code examples
+  agent: refactoring_expert
