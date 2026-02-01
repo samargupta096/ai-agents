@@ -1,5 +1,7 @@
 # Dev Agents 🤖
 
+![Visitors](https://komarev.com/ghpvc/?username=Samarpitgupta&repo=ai-agents&label=Visitors&color=0e75b6&style=flat)
+
 <p align="center">
   <img src="./assets/dev_agents_hero.png" alt="Dev Agents Banner" width="300"/>
 </p>
