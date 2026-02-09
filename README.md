@@ -13,7 +13,13 @@ AI-powered agents for software engineers, running **100% locally** with Ollama.
 ## ✨ Features
 
 <p align="center">
-  <img src="./assets/agents_workflow.png" alt="Agent Workflow" width="400"/>
+  <img src="./assets/dashboard_main.png" alt="Dev Agents Dashboard" width="800"/>
+</p>
+
+### 🌊 Workflow Builder
+
+<p align="center">
+  <img src="./assets/workflow_builder.png" alt="Workflow Builder" width="800"/>
 </p>
 
 | Agent | Description |
@@ -100,6 +106,32 @@ uv run dev_agents refactor ./src/legacy.py -f performance
 
 ---
 
+## 🖥️ Web Dashboard
+
+A modern React UI for managing agents visually:
+
+```bash
+# Terminal 1: Start the API server
+uv sync  # Install new dependencies
+uv run uvicorn dev_agents.api:app --reload --port 8000
+
+# Terminal 2: Start the React frontend
+cd frontend
+npm install
+npm run dev
+```
+
+Open **http://localhost:5173** to access the dashboard.
+
+### Dashboard Features
+- 🤖 **Agent Selection** - Choose from 6 specialized agents
+- 🦙 **Model Picker** - Switch between your local Ollama models
+- 📝 **Rich Input** - Context-aware input fields per agent type
+- 📤 **Live Streaming** - Real-time output with thinking indicators
+- 📜 **History** - Track and restore previous executions
+
+---
+
 ## ⚙️ Configuration
 
 Edit `.env` to configure:
@@ -126,6 +158,9 @@ OLLAMA_MODEL=codellama:13b
 │   ├── crew.py           # Multi-agent orchestration
 │   ├── llm_config.py     # LLM configuration
 │   └── main.py           # CLI entry point
+├── frontend/             # React dashboard origin
+│   ├── src/              # Frontend source code
+│   └── package.json      # Frontend dependencies
 ├── assets/               # Images
 └── README.md
 ```
@@ -137,5 +172,20 @@ OLLAMA_MODEL=codellama:13b
 - **CrewAI** - Multi-agent orchestration
 - **Ollama** - Local LLM runtime
 - **LangChain** - LLM framework
-- **Python 3.10+** - Core language
+- **Python 3.10+** - Backend language
+- **React + Vite** - Frontend dashboard
+
+---
+
+## 📚 Learning Resources
+
+| Guide | Description |
+|-------|-------------|
+| [**CrewAI & LangChain Guide**](./docs/crewai-langchain-guide.md) | Comprehensive tutorial covering LangChain fundamentals, CrewAI architecture, integration patterns, and best practices |
+
+Learn how to build AI agents from scratch with our detailed guide covering:
+- 🔗 **LangChain**: Models, Prompts, Chains, Memory, and Agents
+- 🚀 **CrewAI**: Agents, Tasks, Crews, and Process types
+- 🔄 **Integration**: Using LangChain tools within CrewAI
+- ✅ **Best Practices**: Agent design, performance tips, and production deployment
 

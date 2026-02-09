@@ -9,6 +9,8 @@ dependencies = [
     "langchain-ollama>=0.2.0",
     "pydantic>=2.0.0",
     "python-dotenv>=1.0.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
 ]
 
 [project.scripts]
@@ -18,6 +20,7 @@ review = "dev_agents.main:review"
 debug = "dev_agents.main:debug_code"
 test_gen = "dev_agents.main:generate_tests"
 docs = "dev_agents.main:generate_docs"
+dev_agents_api = "dev_agents.api:app"
 
 [build-system]
 requires = ["hatchling"]

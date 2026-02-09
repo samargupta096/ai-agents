@@ -1,7 +1,7 @@
 """Code Generator Agent - Generate code from natural language descriptions."""
 
 from crewai import Agent
-from crewai_tools import FileReadTool, DirectorySearchTool
+from crewai_tools import FileReadTool, DirectoryReadTool
 
 from dev_agents.llm_config import get_llm
 
@@ -41,7 +41,7 @@ class CodeGeneratorAgent:
                 "and translating them into elegant, maintainable code. You always consider "
                 "edge cases, error handling, and performance."
             ),
-            tools=[FileReadTool(), DirectorySearchTool()],
+            tools=[],
             llm=self.llm,
             verbose=self.verbose,
         )
