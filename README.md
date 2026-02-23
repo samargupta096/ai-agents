@@ -12,14 +12,28 @@ AI-powered agents for software engineers, running **100% locally** with Ollama.
 
 ## ✨ Features
 
+### 🖥️ Dashboard
+
 <p align="center">
-  <img src="./assets/dashboard_main.png" alt="Dev Agents Dashboard" width="800"/>
+  <img src="./assets/screenshot_dashboard.png" alt="Dev Agents Dashboard" width="800"/>
+</p>
+
+### 🔍 Code Reviewer
+
+<p align="center">
+  <img src="./assets/screenshot_code_reviewer.png" alt="Code Reviewer" width="800"/>
+</p>
+
+### 🤖 Agent Selection & Model Picker
+
+<p align="center">
+  <img src="./assets/screenshot_settings.png" alt="Agent Selection and Model Picker" width="800"/>
 </p>
 
 ### 🌊 Workflow Builder
 
 <p align="center">
-  <img src="./assets/workflow_builder.png" alt="Workflow Builder" width="800"/>
+  <img src="./assets/screenshot_workflow.png" alt="Workflow Builder" width="800"/>
 </p>
 
 | Agent | Description |
@@ -182,6 +196,7 @@ OLLAMA_MODEL=codellama:13b
 | Guide | Description |
 |-------|-------------|
 | [**CrewAI & LangChain Guide**](./docs/crewai-langchain-guide.md) | Comprehensive tutorial covering LangChain fundamentals, CrewAI architecture, integration patterns, and best practices |
+| [**Uber System Design**](./docs/uber-system-design.md) | Complete architecture deep-dive: microservices, dispatch system (DISCO), H3 geospatial indexing, Kafka streaming, surge pricing, and fraud detection |
 
 Learn how to build AI agents from scratch with our detailed guide covering:
 - 🔗 **LangChain**: Models, Prompts, Chains, Memory, and Agents
@@ -189,3 +204,10 @@ Learn how to build AI agents from scratch with our detailed guide covering:
 - 🔄 **Integration**: Using LangChain tools within CrewAI
 - ✅ **Best Practices**: Agent design, performance tips, and production deployment
 
+### System Design Resources
+Master large-scale distributed systems with our Uber system design guide:
+- 🏗️ **Architecture Evolution**: Monolith to microservices journey
+- 📍 **H3 Geospatial**: Hexagonal indexing for location services
+- 📊 **Kafka Streaming**: 138M messages/second real-time processing
+- 💰 **Surge Pricing**: Dynamic pricing algorithms
+- 🔐 **Fraud Detection**: ML-powered security systems
