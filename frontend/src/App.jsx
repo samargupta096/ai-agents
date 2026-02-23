@@ -14,6 +14,7 @@ import OutputPanel from "./components/OutputPanel";
 import ExecutionHistory from "./components/ExecutionHistory";
 import SettingsPanel from "./components/SettingsPanel";
 import WorkflowBuilder from "./components/WorkflowBuilder";
+import LanguageSelector from "./components/LanguageSelector";
 import Toast from "./components/Toast";
 import {
   checkOllamaConnection,
@@ -679,6 +680,19 @@ function App() {
 
         <main className="main-content">
           <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+            {/* Workflow Builder Toggle */}
+            <button
+              className="workflow-toggle"
+              onClick={() => setShowWorkflowBuilder(true)}
+            >
+              🔗 Workflow Builder
+            </button>
+
+            <LanguageSelector
+              selectedLanguage={selectedLanguage}
+              onSelect={setSelectedLanguage}
+            />
+
             <AgentSelector
               agents={agents}
               selectedAgent={selectedAgent}
@@ -704,14 +718,6 @@ function App() {
               onAgentPromptsChange={setAgentPrompts}
               selectedAgent={selectedAgent}
             />
-
-            {/* Workflow Builder Toggle */}
-            <button
-              className="workflow-toggle"
-              onClick={() => setShowWorkflowBuilder(true)}
-            >
-              🔗 Workflow Builder
-            </button>
 
             <button
               className="history-toggle"

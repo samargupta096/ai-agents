@@ -68,26 +68,7 @@ export default function SettingsPanel({
 
       {isOpen && (
         <div className="settings-content">
-          {/* Language Selector */}
-          <div className="setting-group">
-            <label className="setting-label">
-              <span className="label-icon">🌐</span>
-              Language
-            </label>
-            <div className="language-grid">
-              {LANGUAGES.map(lang => (
-                <button
-                  key={lang.id}
-                  className={`language-btn ${selectedLanguage === lang.id ? 'active' : ''}`}
-                  onClick={() => onLanguageChange(lang.id)}
-                  title={lang.name}
-                >
-                  <span className="lang-icon">{lang.icon}</span>
-                  <span className="lang-name">{lang.name}</span>
-                </button>
-              ))}
-            </div>
-          </div>
+          {/* Language Selector moved to sidebar top */}
 
           {/* Agent Customization */}
           {selectedAgent && (
