@@ -26,14 +26,16 @@ class DevCrew:
     agents_config = "config/agents.yaml"
     tasks_config = "config/tasks.yaml"
     
-    def __init__(self, verbose: bool = True):
+    def __init__(self, verbose: bool = True, process_type: str = "sequential"):
         """
         Initialize the DevCrew.
         
         Args:
             verbose: Enable verbose output for all agents
+            process_type: The process flow for the crew (sequential or hierarchical)
         """
         self.verbose = verbose
+        self.process_type = process_type
         self.llm = get_llm()
     
     @agent
@@ -86,13 +88,55 @@ class DevCrew:
     
     @crew
     def crew(self) -> Crew:
-        """Create the DevCrew with sequential processing."""
-        return Crew(
-            agents=self.agents,
-            tasks=self.tasks,
-            process=Process.sequential,
-            verbose=self.verbose,
-        )
+        """Create the DevCrew with specified process."""
+        process = Process.hierarchical if self.process_type == "hierarchical" else Process.sequential
+        
+        crew_kwargs = {
+            "agents": self.agents,
+            "tasks": self.tasks,
+            "process": process,
+            "verbose": self.verbose,
+        }
+        
+        if process == Process.hierarchical:
+            crew_kwargs["manager_llm"] = self.llm
+            
+        return Crew(**crew_kwargs)
+
+
+def run_crew_pipeline(
+    file_path: str,
+    code_content: str,
+    language: str = "python",
+    process_type: str = "sequential",
+    verbose: bool = True,
+) -> str:
+    """
+    Run the full CrewAI pipeline.
+    
+    Args:
+        file_path: Path to the file being reviewed
+        code_content: The code content
+        language: Programming language
+        process_type: 'sequential' or 'hierarchical'
+        verbose: Enable verbose output
+        
+    Returns:
+        String result from the crew execution
+    """
+    inputs = {
+        "file_path": file_path,
+        "code_content": code_content,
+        "language": language,
+        "error_description": "Analyze for potential bugs",
+        "stack_trace": "None",
+        "test_framework": "pytest",
+        "doc_type": "docstrings",
+    }
+    
+    dev_crew = DevCrew(verbose=verbose, process_type=process_type)
+    result = dev_crew.crew().kickoff(inputs=inputs)
+    return str(result)
 
 
 def run_full_review_pipeline(
@@ -102,7 +146,7 @@ def run_full_review_pipeline(
     verbose: bool = True,
 ) -> dict:
     """
-    Run a full code review pipeline with multiple agents.
+    Run a full code review pipeline with multiple agents using direct calls.
     
     Pipeline:
     1. Code Review - Check for issues and best practices

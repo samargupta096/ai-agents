@@ -11,27 +11,42 @@ class TestGeneratorAgent:
     AI agent specialized in generating comprehensive tests.
     """
     
-    def __init__(self, test_framework: str = "pytest", verbose: bool = True):
+    def __init__(
+        self,
+        test_framework: str = "pytest",
+        verbose: bool = True,
+        custom_role: str = None,
+        custom_goal: str = None,
+        custom_backstory: str = None,
+        **llm_kwargs,
+    ):
         """
         Initialize the Test Generator Agent.
         
         Args:
             test_framework: Testing framework to use (default: pytest)
             verbose: Enable verbose output
+            custom_role: Optional role override
+            custom_goal: Optional goal override
+            custom_backstory: Optional backstory override
+            **llm_kwargs: Additional arguments for LLM initialization
         """
         self.test_framework = test_framework
         self.verbose = verbose
-        self.llm = get_llm()
+        self.custom_role = custom_role
+        self.custom_goal = custom_goal
+        self.custom_backstory = custom_backstory
+        self.llm = get_llm(**llm_kwargs)
         
     def create_agent(self) -> Agent:
         """Create and return the CrewAI agent instance."""
         return Agent(
-            role=f"Quality Assurance Engineer specializing in {self.test_framework}",
-            goal=(
+            role=self.custom_role or f"Quality Assurance Engineer specializing in {self.test_framework}",
+            goal=self.custom_goal or (
                 "Generate comprehensive unit and integration tests that achieve high code "
                 "coverage and catch edge cases and potential bugs."
             ),
-            backstory=(
+            backstory=self.custom_backstory or (
                 "You are a testing expert who believes in test-driven development. You "
                 "write tests that are clear, maintainable, and truly validate code "
                 "behavior. You always consider edge cases, error conditions, and "

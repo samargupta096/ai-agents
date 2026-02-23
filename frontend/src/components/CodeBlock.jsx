@@ -73,6 +73,7 @@ function highlightCode(code, language) {
 
   // Apply highlighting in order (comments last to override)
   if (patterns.strings) {
+    // String literals (simple version to avoid backreference issues)
     highlighted = highlighted.replace(patterns.strings, '<span class="token string">$&</span>')
   }
   if (patterns.numbers) {

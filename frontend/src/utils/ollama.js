@@ -60,8 +60,8 @@ export async function getModelInfo(modelName) {
     });
     if (!response.ok) throw new Error('Failed to get model info');
     return await response.json();
-  } catch (error) {
-    console.error('Failed to get model info:', error);
+  } catch {
+    console.error('Failed to get model info for', modelName);
     return null;
   }
 }

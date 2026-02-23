@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import './SettingsPanel.css'
 import './SettingsPanel.css'
 
 const LANGUAGES = [
@@ -30,10 +30,24 @@ export default function SettingsPanel({
   isOpen, 
   onToggle,
   selectedLanguage,
-  onLanguageChange 
+  onLanguageChange,
+  agentPrompts,
+  onAgentPromptsChange,
+  selectedAgent
 }) {
   const updateSetting = (key, value) => {
     onSettingsChange({ ...settings, [key]: value })
+  }
+
+  const updateAgentPrompt = (key, value) => {
+    if (!selectedAgent) return;
+    onAgentPromptsChange({
+      ...agentPrompts,
+      [selectedAgent.id]: {
+        ...(agentPrompts[selectedAgent.id] || {}),
+        [key]: value
+      }
+    });
   }
 
   return (
@@ -74,6 +88,48 @@ export default function SettingsPanel({
               ))}
             </div>
           </div>
+
+          {/* Agent Customization */}
+          {selectedAgent && (
+            <div className="setting-group agent-customization">
+              <label className="setting-label">
+                <span className="label-icon">{selectedAgent.icon}</span>
+                Agent Configuration Overrides
+              </label>
+              <div className="customization-fields">
+                <div className="field-group">
+                  <span className="field-label">Role</span>
+                  <input
+                    type="text"
+                    value={agentPrompts?.[selectedAgent.id]?.role || ''}
+                    onChange={(e) => updateAgentPrompt('role', e.target.value)}
+                    className="setting-input"
+                    placeholder="e.g. Senior React Developer"
+                  />
+                </div>
+                <div className="field-group">
+                  <span className="field-label">Goal</span>
+                  <textarea
+                    value={agentPrompts?.[selectedAgent.id]?.goal || ''}
+                    onChange={(e) => updateAgentPrompt('goal', e.target.value)}
+                    className="setting-textarea"
+                    placeholder="e.g. Write highly optimized React code..."
+                    rows={2}
+                  />
+                </div>
+                <div className="field-group">
+                  <span className="field-label">Backstory</span>
+                  <textarea
+                    value={agentPrompts?.[selectedAgent.id]?.backstory || ''}
+                    onChange={(e) => updateAgentPrompt('backstory', e.target.value)}
+                    className="setting-textarea"
+                    placeholder="e.g. You have 10 years of experience writing SPAs..."
+                    rows={3}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Temperature */}
           <div className="setting-group">
@@ -130,6 +186,28 @@ export default function SettingsPanel({
                   {opt.label}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Pipeline Flow */}
+          <div className="setting-group">
+            <label className="setting-label">
+              <span className="label-icon">🌊</span>
+              Pipeline Flow
+            </label>
+            <div className="context-buttons">
+              <button
+                className={`context-btn ${settings.pipelineFlow === 'sequential' ? 'active' : ''}`}
+                onClick={() => updateSetting('pipelineFlow', 'sequential')}
+              >
+                Sequential
+              </button>
+              <button
+                className={`context-btn ${settings.pipelineFlow === 'hierarchical' ? 'active' : ''}`}
+                onClick={() => updateSetting('pipelineFlow', 'hierarchical')}
+              >
+                Hierarchical
+              </button>
             </div>
           </div>
 

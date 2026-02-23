@@ -17,7 +17,7 @@ export default function WorkflowBuilder({
 
   const addAgentToWorkflow = (agent) => {
     const step = {
-      id: Date.now(),
+      id: crypto.randomUUID(),
       agent: agent,
       config: {
         useOutputAsinput: workflow.length > 0, // Default to using previous output

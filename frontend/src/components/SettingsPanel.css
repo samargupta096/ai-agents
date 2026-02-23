@@ -246,3 +246,52 @@
   margin: 0;
   line-height: 1.4;
 }
+
+/* Agent Customization */
+.agent-customization {
+  background: var(--bg-card-hover);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border-color);
+  margin-bottom: var(--spacing-sm);
+}
+
+.customization-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-xs);
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.setting-textarea {
+  width: 100%;
+  padding: var(--spacing-sm);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  resize: vertical;
+  min-height: 60px;
+  line-height: 1.4;
+  transition: all var(--transition-base);
+}
+
+.setting-textarea:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}

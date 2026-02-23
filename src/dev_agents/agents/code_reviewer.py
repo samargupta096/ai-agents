@@ -12,26 +12,40 @@ class CodeReviewerAgent:
     and adherence to best practices.
     """
     
-    def __init__(self, verbose: bool = True):
+    def __init__(
+        self,
+        verbose: bool = True,
+        custom_role: str = None,
+        custom_goal: str = None,
+        custom_backstory: str = None,
+        **llm_kwargs,
+    ):
         """
         Initialize the Code Reviewer Agent.
         
         Args:
             verbose: Enable verbose output
+            custom_role: Optional role override
+            custom_goal: Optional goal override
+            custom_backstory: Optional backstory override
+            **llm_kwargs: Additional arguments for LLM initialization
         """
         self.verbose = verbose
-        self.llm = get_llm()
+        self.custom_role = custom_role
+        self.custom_goal = custom_goal
+        self.custom_backstory = custom_backstory
+        self.llm = get_llm(**llm_kwargs)
         
     def create_agent(self) -> Agent:
         """Create and return the CrewAI agent instance."""
         return Agent(
-            role="Senior Code Reviewer and Security Expert",
-            goal=(
+            role=self.custom_role or "Senior Code Reviewer and Security Expert",
+            goal=self.custom_goal or (
                 "Thoroughly review code for bugs, security vulnerabilities, performance "
                 "issues, and adherence to best practices. Provide actionable, constructive "
                 "feedback."
             ),
-            backstory=(
+            backstory=self.custom_backstory or (
                 "You are a meticulous code reviewer who has reviewed thousands of pull "
                 "requests. You have a keen eye for spotting potential issues, from subtle "
                 "bugs to security vulnerabilities. You provide feedback that is specific, "

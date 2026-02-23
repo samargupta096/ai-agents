@@ -11,25 +11,39 @@ class BugDetectiveAgent:
     AI agent specialized in debugging code and identifying root causes.
     """
     
-    def __init__(self, verbose: bool = True):
+    def __init__(
+        self,
+        verbose: bool = True,
+        custom_role: str = None,
+        custom_goal: str = None,
+        custom_backstory: str = None,
+        **llm_kwargs,
+    ):
         """
         Initialize the Bug Detective Agent.
         
         Args:
             verbose: Enable verbose output
+            custom_role: Optional role override
+            custom_goal: Optional goal override
+            custom_backstory: Optional backstory override
+            **llm_kwargs: Additional arguments for LLM initialization
         """
         self.verbose = verbose
-        self.llm = get_llm()
+        self.custom_role = custom_role
+        self.custom_goal = custom_goal
+        self.custom_backstory = custom_backstory
+        self.llm = get_llm(**llm_kwargs)
         
     def create_agent(self) -> Agent:
         """Create and return the CrewAI agent instance."""
         return Agent(
-            role="Debugging Specialist and Root Cause Analyst",
-            goal=(
+            role=self.custom_role or "Debugging Specialist and Root Cause Analyst",
+            goal=self.custom_goal or (
                 "Identify the root cause of bugs and issues by analyzing code, error "
                 "messages, and stack traces. Provide clear explanations and solutions."
             ),
-            backstory=(
+            backstory=self.custom_backstory or (
                 "You are a debugging expert who thrives on solving complex problems. You "
                 "systematically analyze symptoms, form hypotheses, and trace through code "
                 "to find root causes. You've debugged everything from race conditions to "

@@ -30,6 +30,7 @@ from dev_agents.agents import (
     DocWriterAgent,
     RefactoringExpertAgent,
 )
+from dev_agents.crew import run_crew_pipeline
 from dev_agents.llm_config import get_ollama_llm
 
 app = FastAPI(
@@ -59,6 +60,30 @@ class AgentRequest(BaseModel):
     file_path: Optional[str] = None
     code_content: Optional[str] = None
     error_message: Optional[str] = None
+    # Advanced LLM Parameters
+    temperature: float = 0.7
+    max_tokens: int = 2048
+    top_p: float = 0.9
+    repeat_penalty: float = 1.1
+    # Advanced Agent Configuration Overrides
+    agent_role: Optional[str] = None
+    agent_goal: Optional[str] = None
+    agent_backstory: Optional[str] = None
+
+
+class PipelineRequest(BaseModel):
+    """Request model for full pipeline execution."""
+    prompt: str
+    model: str = "qwen3-coder:latest"
+    language: str = "python"
+    file_path: Optional[str] = None
+    code_content: Optional[str] = None
+    pipeline_type: str = "sequential"
+    # Advanced LLM Parameters
+    temperature: float = 0.7
+    max_tokens: int = 2048
+    top_p: float = 0.9
+    repeat_penalty: float = 1.1
 
 
 class FileBrowseRequest(BaseModel):
@@ -134,6 +159,13 @@ AGENTS = [
         icon="⚙️",
         color="#EC4899",
     ),
+    AgentInfo(
+        id="pipeline",
+        name="Full Dev Pipeline",
+        description="Run the full CrewAI pipeline (Review -> Bug Check -> Tests -> Docs)",
+        icon="🌊",
+        color="#14B8A6",
+    ),
 ]
 
 
@@ -207,14 +239,26 @@ async def stream_agent_output(request: AgentRequest) -> AsyncGenerator[str, None
         # Execute agent based on type
         result = ""
         
+        # Extract common kwargs for agent initialization
+        agent_kwargs = {
+            "verbose": False,
+            "temperature": request.temperature,
+            "max_tokens": request.max_tokens,
+            "top_p": request.top_p,
+            "repeat_penalty": request.repeat_penalty,
+            "custom_role": request.agent_role,
+            "custom_goal": request.agent_goal,
+            "custom_backstory": request.agent_backstory,
+        }
+        
         if request.agent_type == "generate":
-            agent = CodeGeneratorAgent(language=request.language, verbose=False)
+            agent = CodeGeneratorAgent(language=request.language, **agent_kwargs)
             result = await asyncio.to_thread(agent.generate, request.prompt)
             
         elif request.agent_type == "review":
             if not request.code_content:
                 raise ValueError("Code content is required for review")
-            agent = CodeReviewerAgent(verbose=False)
+            agent = CodeReviewerAgent(**agent_kwargs)
             result = await asyncio.to_thread(
                 agent.review,
                 request.file_path or "input.py",
@@ -225,7 +269,7 @@ async def stream_agent_output(request: AgentRequest) -> AsyncGenerator[str, None
         elif request.agent_type == "debug":
             if not request.code_content or not request.error_message:
                 raise ValueError("Code content and error message are required for debugging")
-            agent = BugDetectiveAgent(verbose=False)
+            agent = BugDetectiveAgent(**agent_kwargs)
             result = await asyncio.to_thread(
                 agent.debug,
                 request.error_message,
@@ -238,7 +282,7 @@ async def stream_agent_output(request: AgentRequest) -> AsyncGenerator[str, None
         elif request.agent_type == "test":
             if not request.code_content:
                 raise ValueError("Code content is required for test generation")
-            agent = TestGeneratorAgent(test_framework=request.test_framework, verbose=False)
+            agent = TestGeneratorAgent(test_framework=getattr(request, "test_framework", "pytest"), **agent_kwargs)
             result = await asyncio.to_thread(
                 agent.generate_tests,
                 request.file_path or "input.py",
@@ -249,7 +293,7 @@ async def stream_agent_output(request: AgentRequest) -> AsyncGenerator[str, None
         elif request.agent_type == "docs":
             if not request.code_content:
                 raise ValueError("Code content is required for documentation")
-            agent = DocWriterAgent(verbose=False)
+            agent = DocWriterAgent(**agent_kwargs)
             result = await asyncio.to_thread(
                 agent.generate_docs,
                 request.file_path or "input.py",
@@ -261,7 +305,7 @@ async def stream_agent_output(request: AgentRequest) -> AsyncGenerator[str, None
         elif request.agent_type == "refactor":
             if not request.code_content:
                 raise ValueError("Code content is required for refactoring")
-            agent = RefactoringExpertAgent(verbose=False)
+            agent = RefactoringExpertAgent(**agent_kwargs)
             result = await asyncio.to_thread(
                 agent.refactor,
                 request.file_path or "input.py",
@@ -290,6 +334,52 @@ async def execute_agent(request: AgentRequest):
     """Execute an agent with SSE streaming response."""
     return StreamingResponse(
         stream_agent_output(request),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
+async def stream_pipeline_output(request: PipelineRequest) -> AsyncGenerator[str, None]:
+    """Stream pipeline output as SSE events."""
+    yield f"data: {json.dumps({'type': 'status', 'message': 'Initializing DEV Crew Pipeline...'})}\n\n"
+    await asyncio.sleep(0.1)
+    
+    try:
+        os.environ["OLLAMA_MODEL"] = request.model
+        yield f"data: {json.dumps({'type': 'status', 'message': f'Using process: {request.pipeline_type}'})}\n\n"
+        await asyncio.sleep(0.1)
+        yield f"data: {json.dumps({'type': 'thinking', 'message': 'Crew is working...'})}\n\n"
+        
+        result = await asyncio.to_thread(
+            run_crew_pipeline,
+            file_path=request.file_path or "input.py",
+            code_content=request.code_content or request.prompt,
+            language=request.language,
+            process_type=request.pipeline_type,
+            verbose=False,
+        )
+        
+        chunk_size = 50
+        for i in range(0, len(result), chunk_size):
+            chunk = result[i:i + chunk_size]
+            yield f"data: {json.dumps({'type': 'output', 'content': chunk})}\n\n"
+            await asyncio.sleep(0.02)
+            
+        yield f"data: {json.dumps({'type': 'complete', 'message': 'Pipeline completed successfully'})}\n\n"
+        
+    except Exception as e:
+        yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
+
+
+@app.post("/api/pipeline")
+async def execute_pipeline(request: PipelineRequest):
+    """Execute the full agent pipeline with SSE streaming response."""
+    return StreamingResponse(
+        stream_pipeline_output(request),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",

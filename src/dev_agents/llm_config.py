@@ -12,6 +12,9 @@ def get_ollama_llm(
     model: Optional[str] = None,
     base_url: Optional[str] = None,
     temperature: float = 0.7,
+    max_tokens: Optional[int] = None,
+    top_p: float = 0.9,
+    repeat_penalty: float = 1.1,
 ) -> LLM:
     """
     Get an Ollama LLM instance for CrewAI agents.
@@ -20,6 +23,9 @@ def get_ollama_llm(
         model: Ollama model name (default: from OLLAMA_MODEL env var or codellama:13b)
         base_url: Ollama server URL (default: from OLLAMA_BASE_URL env var or localhost:11434)
         temperature: Sampling temperature for generation
+        max_tokens: Maximum tokens to generate
+        top_p: Top P sampling parameter
+        repeat_penalty: Repetition penalty parameter
         
     Returns:
         LLM instance configured for Ollama
@@ -31,6 +37,9 @@ def get_ollama_llm(
         model=f"ollama/{model}",
         base_url=base_url,
         temperature=temperature,
+        max_tokens=max_tokens,
+        top_p=top_p,
+        frequency_penalty=repeat_penalty, # Note: using frequency_penalty equivalent in litellm for repeat_penalty
     )
 
 
@@ -58,21 +67,22 @@ def get_openai_llm(
     )
 
 
-def get_llm(prefer_local: bool = True) -> LLM:
+def get_llm(prefer_local: bool = True, **kwargs) -> LLM:
     """
     Get the best available LLM based on configuration.
     
     Args:
         prefer_local: If True, prefer Ollama over OpenAI
+        **kwargs: Optional configuration parameters passed to the LLM backend
         
     Returns:
         LLM instance (Ollama or OpenAI fallback)
     """
     if prefer_local:
-        return get_ollama_llm()
+        return get_ollama_llm(**kwargs)
     
     openai_llm = get_openai_llm()
     if openai_llm:
         return openai_llm
     
-    return get_ollama_llm()
+    return get_ollama_llm(**kwargs)

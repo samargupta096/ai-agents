@@ -11,25 +11,39 @@ class DocWriterAgent:
     AI agent specialized in generating documentation.
     """
     
-    def __init__(self, verbose: bool = True):
+    def __init__(
+        self,
+        verbose: bool = True,
+        custom_role: str = None,
+        custom_goal: str = None,
+        custom_backstory: str = None,
+        **llm_kwargs,
+    ):
         """
         Initialize the Documentation Writer Agent.
         
         Args:
             verbose: Enable verbose output
+            custom_role: Optional role override
+            custom_goal: Optional goal override
+            custom_backstory: Optional backstory override
+            **llm_kwargs: Additional arguments for LLM initialization
         """
         self.verbose = verbose
-        self.llm = get_llm()
+        self.custom_role = custom_role
+        self.custom_goal = custom_goal
+        self.custom_backstory = custom_backstory
+        self.llm = get_llm(**llm_kwargs)
         
     def create_agent(self) -> Agent:
         """Create and return the CrewAI agent instance."""
         return Agent(
-            role="Technical Writer and Documentation Specialist",
-            goal=(
+            role=self.custom_role or "Technical Writer and Documentation Specialist",
+            goal=self.custom_goal or (
                 "Create clear, comprehensive documentation including docstrings, README "
                 "files, and API documentation that developers will actually want to read."
             ),
-            backstory=(
+            backstory=self.custom_backstory or (
                 "You are a technical writer who bridges the gap between complex code and "
                 "clear documentation. You write documentation that is accurate, concise, "
                 "and helpful for both beginners and experienced developers."
