@@ -1,0 +1,40 @@
+# Python virtual environments
+**/.venv/
+.venv/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables
+.env
+
+# IDE specific files
+**/.idea/
+.vscode/
+
+# Build and distribution
+dist/
+build/
+*.egg-info/
+
+# Log files
+*.log
+
+# Local development files
+*.lock
+uv.lock
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Frontend
+dist-ssr/
+*.local
+.DS_Store
+coverage/
